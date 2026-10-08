@@ -1,0 +1,11 @@
+flask
+joblib
+numpy
+pandas
+requests
+geopy
+folium
+scikit-learn
+xgboost
+imbalanced-learn
+matplotlib
