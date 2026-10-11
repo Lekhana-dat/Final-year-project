@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, jsonify
-import joblib
 import numpy as np
 import pandas as pd
 import requests
@@ -16,11 +15,6 @@ app = Flask(__name__)
 def inject_datetime():
     return {'datetime': datetime}
 
-
-# Load models
-models = joblib.load('all_models.pkl')
-log_reg_model = models['type_model']
-scaler = models['scaler']
 
 # Load crime data
 crime_df = pd.read_csv("crime_data.csv", parse_dates=["Month"])
@@ -44,7 +38,7 @@ try:
     trend_df = pd.read_csv("trend_prediction_summary.csv")
     trend_df["Area"] = trend_df["Area"].str.strip().str.upper()
 except:
-    trend_df = pd.DataFrame(columns=["Area", "PrevCount", "PredictedCount", "TrendPrediction"])
+    trend_df = pd.DataFrame(columns=["Area", "PrevCount", "TrendPrediction"])
 
 postcode_cache = {}
 
@@ -83,13 +77,9 @@ def get_trend_status(area_code, lat, lon):
             return "Unknown"
         pred = nearby_match.iloc[0]
 
-    if pred["PredictedCount"] > pred["PrevCount"]:
+    if pred["TrendPrediction"] == "Increase":
         return "Predicted Increase"
-    elif pred["PredictedCount"] < pred["PrevCount"]:
-        return "Predicted Decrease"
-    else:
-        return "No Change"
-
+    return "No Increase Predicted"
 
 
 def get_location_from_postcode(area):
